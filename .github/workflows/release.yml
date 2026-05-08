@@ -33,7 +33,7 @@ jobs:
       - name: setup bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: .tool-versions
+          bun-version-file: .tool-versions
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable # Set this to dtolnay/rust-toolchain@nightly
