@@ -1,0 +1,12 @@
+{
+  "extends": "@vue/tsconfig",
+  "compilerOptions": {
+    "paths": {
+      "#build/ui": [
+        "./node_modules/.nuxt-ui/ui"
+      ]
+    }
+  },
+  "references": [{ "path": "./tsconfig.node.json" }],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "auto-imports.d.ts", "components.d.ts"]
+}
