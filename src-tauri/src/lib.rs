@@ -5,6 +5,7 @@ pub fn run() {
         .setup(#[allow(unused_variables)] |app| {
             #[cfg(target_os = "linux")] {
                 // 引入 WebKit GTK 相关的 trait
+                use tauri::Manager;
                 use webkit2gtk::{WebViewExt, PermissionRequestExt};
                 // 获取主窗口 (默认 label 是 "main")
                 let window = app.get_webview_window("main").unwrap();
