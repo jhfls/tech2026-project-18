@@ -21,6 +21,7 @@
     "active": true,
     "publisher": "Typed SIGTERM",
     "targets": ["msi", "deb", "dmg"],
+    "license": "MIT",
     "icon": [
       "icons/32x32.png",
       "icons/64x64.png",
@@ -42,7 +43,7 @@
     ],
     "windows": {
       "wix": {
-        "language": "zh-cn"
+        "language": "zh-CN"
       }
     }
   }
