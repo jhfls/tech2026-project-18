@@ -39,6 +39,11 @@
       "icons/Square71x71Logo.png",
       "icons/Square89x89Logo.png",
       "icons/StoreLogo.png"
-    ]
+    ],
+    "windows": {
+      "wix": {
+        "language": "zh-cn"
+      }
+    }
   }
 }
