@@ -18,7 +18,7 @@ function openDialog(): void {
     <Saturn />
 
     <div class="fixed bottom-0 right-0">
-      <Live2DPanel manifest-url="/live2d/hiyori/manifest.json" @activate="openDialog" />
+      <Live2DPanel manifest-url="https://jhfls-tech2026-project-18-assets.by-ts.top/live2d/hiyori/manifest.json" @activate="openDialog" />
     </div>
 
     <div class="fixed top-4 right-4">
