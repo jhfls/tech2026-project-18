@@ -1,10 +1,2 @@
 name = "jhfls-tech2026-project-18"
 compatibility_date = "2026-05-09"
-
-[assets]
-directory = "./dist"
-binding = "ASSETS"
-not_found_handling = "single-page-application"
-
-[build]
-command = "bun run build"
