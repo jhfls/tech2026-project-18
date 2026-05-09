@@ -25,11 +25,13 @@ const messages = ref<UIMessage[]>([{
 4. 当用户没有表达请求时，回答在 50 字以内` },
   ],
 }]);
+const shownMessages = computed(() => messages.value.filter(m => m.role !== 'system'));
 const chatInput = ref('');
 const streamingText = ref('');
 const chatStatus = ref<'ready' | 'recording' | 'transcribing' | 'streaming' | 'speaking' | 'error'>('ready');
 
 let mediaRecorder: MediaRecorder | undefined;
+let isManualStop = false;
 let recordedChunks: Blob[] = [];
 const currentAudio = shallowRef<HTMLAudioElement>();
 
@@ -44,6 +46,53 @@ const chatMessagesStatus = computed<'submitted' | 'streaming' | 'ready' | 'error
     return 'error';
   return 'ready';
 });
+
+const chatPromptStatus = computed<'ready' | 'submitted' | 'streaming' | 'error'>(() => {
+  switch (chatStatus.value) {
+    case 'ready':
+      return 'ready';
+    case 'recording':
+    case 'transcribing':
+      return 'submitted';
+    case 'streaming':
+    case 'speaking':
+      return 'streaming';
+    case 'error':
+      return 'error';
+    default:
+      return 'ready';
+  }
+});
+
+function handleStop(): void {
+  // Set manual stop flag to prevent transcription
+  isManualStop = true;
+  // Stop recording if active
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+  }
+  // Stop current audio playback
+  revokeCurrentAudio();
+  // Reset status to ready
+  chatStatus.value = 'ready';
+  streamingText.value = '';
+}
+
+function handleReload(): void {
+  // If there's text in the input, submit it
+  if (chatInput.value.trim()) {
+    submitText();
+    return;
+  }
+  // Otherwise, try to resend the last user message
+  const lastUserMessage = [...messages.value].reverse().find(m => m.role === 'user');
+  if (lastUserMessage) {
+    const text = getMessageText(lastUserMessage);
+    if (text) {
+      continueConversation(text);
+    }
+  }
+}
 
 function showError(title: string, error: unknown) {
   toast.add({
@@ -229,6 +278,11 @@ async function stopRecordingAndSubmit(): Promise<void> {
     recorder.onstop = () => {
       for (const track of recorder.stream.getTracks())
         track.stop();
+      if (isManualStop) {
+        isManualStop = false;
+        reject(new Error('手动停止'));
+        return;
+      }
       if (recordedChunks.length === 0) {
         reject(new Error('没有录到声音'));
         return;
@@ -239,7 +293,10 @@ async function stopRecordingAndSubmit(): Promise<void> {
     recorder.stop();
   }).catch((error) => {
     chatStatus.value = 'ready';
-    showError('录音失败', error);
+    // Don't show error for manual stop
+    if (error.message !== '手动停止') {
+      showError('录音失败', error);
+    }
     throw error;
   });
 
@@ -378,7 +435,7 @@ function pickRecorderMimeType(): string {
   <Suspense>
     <div class="space-y-2 w-full">
       <UChatMessages
-        :messages
+        :messages="shownMessages"
         :status="chatMessagesStatus"
         :should-auto-scroll="true"
         :user="{ side: 'right', variant: 'soft' }"
@@ -386,14 +443,7 @@ function pickRecorderMimeType(): string {
         class="h-[min(54vh,520px)] bg-default/70 p-2 overflow-auto"
       >
         <template #indicator>
-          <div v-if="streamingText" class="*:first:mt-0 *:last:mb-0">
-            <Comark
-              :markdown="streamingText"
-              :streaming="true"
-              :plugins="[highlight()]"
-            />
-          </div>
-          <div v-else class="flex items-center gap-2 overflow-hidden text-muted">
+          <div v-if="chatStatus === 'transcribing' || chatStatus === 'speaking' || chatStatus === 'streaming'" class="flex items-center gap-2 overflow-hidden text-muted">
             <div
               class="shrink-0 grid size-4"
               :style="{
@@ -409,6 +459,13 @@ function pickRecorderMimeType(): string {
               />
             </div>
             <UChatShimmer :text="displayedText" class="font-mono text-sm" />
+          </div>
+          <div v-if="streamingText" class="*:first:mt-0 *:last:mb-0">
+            <Comark
+              :markdown="streamingText"
+              :streaming="true"
+              :plugins="[highlight()]"
+            />
           </div>
         </template>
 
@@ -450,7 +507,7 @@ function pickRecorderMimeType(): string {
           :color="isRecording ? 'error' : 'primary'"
           :icon="isRecording ? 'i-lucide-square' : 'i-lucide-mic'"
           :disabled="isBusy && !isRecording"
-          size="lg"
+          size="xl"
           @click="toggleRecording"
         />
 
@@ -460,6 +517,13 @@ function pickRecorderMimeType(): string {
           :disabled="isBusy"
           class="m-0 h-12"
           @submit.prevent="submitText"
+        />
+        <UChatPromptSubmit
+          :status="chatPromptStatus"
+          size="xl"
+          class="size-12 justify-center"
+          @stop="handleStop"
+          @reload="handleReload"
         />
       </div>
     </div>

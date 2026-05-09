@@ -39,7 +39,7 @@ export async function generateSpeech(
     body: JSON.stringify({
       model: 'mimo-v2.5-tts-voiceclone',
       messages: [
-        { role: 'user', content: '' },
+        { role: 'user', content: '你是金华市外国语学校科技节上的讲解员，用较快的语速朗读文本。' },
         { role: 'assistant', content: text },
       ],
       audio: { format: 'wav', voice },

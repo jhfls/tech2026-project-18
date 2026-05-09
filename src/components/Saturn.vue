@@ -698,7 +698,7 @@ function onResize(): void {
     ref="videoRef"
     playsinline
     muted
-    class="pointer-events-none fixed top-5 left-5 h-auto w-[34vw] min-w-40 rounded-lg border-2 border-emerald-400/50 bg-black [transform:scaleX(-1)] transition-opacity md:w-[20vw] md:min-w-[220px]"
+    class="pointer-events-none fixed top-5 left-5 h-auto w-[34vw] min-w-40 rounded-lg border-2 border-emerald-400/50 bg-black transform-[scaleX(-1)] transition-opacity md:w-[20vw] md:min-w-55"
   />
 
   <div v-if="loading" id="loading" class="loading">

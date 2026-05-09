@@ -6,11 +6,6 @@ import Settings from './components/Settings.vue';
 import VoiceChatDialog from './components/VoiceChatDialog.vue';
 
 const isDialogOpen = ref(false);
-const isSettingsOpen = ref(false);
-
-function openDialog(): void {
-  isDialogOpen.value = true;
-}
 </script>
 
 <template>
@@ -18,16 +13,23 @@ function openDialog(): void {
     <Saturn />
 
     <div class="fixed bottom-0 right-0">
-      <Live2DPanel manifest-url="https://jhfls-tech2026-project-18-assets.by-ts.top/live2d/hiyori/manifest.json" @activate="openDialog" />
+      <Live2DPanel
+        manifest-url="https://jhfls-tech2026-project-18-assets.by-ts.top/live2d/hiyori/manifest.json"
+        @activate="isDialogOpen = true"
+      />
     </div>
 
     <div class="fixed top-4 right-4">
-      <UButton
-        icon="i-lucide-settings"
-        variant="outline"
-        color="neutral"
-        @click="isSettingsOpen = true"
-      />
+      <USlideover title="设置">
+        <UButton
+          icon="i-lucide-settings"
+          variant="outline"
+          color="neutral"
+        />
+        <template #body>
+          <Settings />
+        </template>
+      </USlideover>
     </div>
 
     <UModal v-model:open="isDialogOpen" title="对话" :dismissible="false">
@@ -35,11 +37,5 @@ function openDialog(): void {
         <VoiceChatDialog />
       </template>
     </UModal>
-
-    <USlideover v-model:open="isSettingsOpen" title="设置">
-      <template #body>
-        <Settings />
-      </template>
-    </USlideover>
   </UApp>
 </template>
