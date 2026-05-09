@@ -72,7 +72,7 @@ async function getModelUrlFromManifest(manifestUrl: string): Promise<string> {
   if (!manifest.modelPath)
     throw new Error('Live2D 模型清单缺少 modelPath');
 
-  return manifest.modelPath;
+  return new URL(manifest.modelPath, manifestUrl).toString();
 }
 </script>
 
