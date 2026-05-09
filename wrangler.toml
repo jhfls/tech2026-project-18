@@ -1,2 +1,3 @@
 name = "jhfls-tech2026-project-18"
 compatibility_date = "2026-05-09"
+pages_build_output_dir = "dist"
