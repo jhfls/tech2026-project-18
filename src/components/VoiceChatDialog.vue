@@ -516,12 +516,12 @@ function pickRecorderMimeType(): string {
           placeholder="输入文字…"
           :disabled="isBusy"
           class="m-0 h-12"
-          @submit.prevent="submitText"
         />
         <UChatPromptSubmit
           :status="chatPromptStatus"
           size="xl"
           class="size-12 justify-center"
+          @click="submitText"
           @stop="handleStop"
           @reload="handleReload"
         />
